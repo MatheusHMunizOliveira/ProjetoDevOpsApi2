@@ -4,8 +4,7 @@ const app = express()
 
 // depois do db
 const mongoose = require('mongoose')
-
-const Person = require('./models/Person')
+const Dispositivo = require('./models/Dispositivos')
 
 app.use(
   express.urlencoded({
@@ -16,102 +15,96 @@ app.use(
 app.use(express.json())
 
 // rotas
-app.post('/person', async (req, res) => {
-  const { name, salary, approved } = req.body
+app.post('/dispositivos', async (req, res) => {
+  const { nome, especificacoes } = req.body
 
-  if(!name){
+  if(!nome){
     res.status(422).json({error: 'O nome é obrigatório'})
-  }3
-
-  if(!salary){
-    res.status(422).json({error: 'O salário é obrigatório'})
   }
 
-  if(!approved){
-    res.status(422).json({error: 'Campo obrigatório'})
-  }
+  if(!especificacoes){
+    res.status(422).json({error: 'As especificações são obrigatórias'})
+  } 
 
-  const person = {
-    name,
-    salary,
-    approved,
+  const dispositivo = {
+    nome,
+    especificacoes,
   }
 
   try {
-    await Person.create(person)
+    await Dispositivo.create(dispositivo)
 
-    res.status(201).json({ message: 'Pessoa inserida no sistema com sucesso!' })
+    res.status(201).json({ message: 'Dispositivo inserido no sistema com sucesso!' })
   } catch (error) {
     res.status(500).json({ erro: error })
   }
 })
 
-app.get('/person', async (req, res) => {
+app.get('/dispositivos', async (req, res) => {
   try {
-    const people = await Person.find()
+    const dispositivos = await Dispositivo.find()
 
-    res.status(200).json(people)
+    res.status(200).json(dispositivos)
   } catch (error) {
     res.status(500).json({ erro: error })
   }
 })
 
-app.get('/person/:id', async (req, res) => {
+app.get('/dispositivos/:id', async (req, res) => {
   const id = req.params.id
 
   try {
-    const person = await Person.findOne({ _id: id })
+    const dispositivos = await Dispositivo.findOne({ _id: id })
 
-    if (!person) {
-      res.status(422).json({ message: 'Usuário não encontrado!' })
+    if (!dispositivos) {
+      res.status(422).json({ message: 'Dispositivo não encontrado!' })
       return
     }
 
-    res.status(200).json(person)
+    res.status(200).json(dispositivos)
   } catch (error) {
     res.status(500).json({ erro: error })
   }
-})
+}) 
 
-app.patch('/person/:id', async (req, res) => {
+app.patch('/dispositivos/:id', async (req, res) => {
   const id = req.params.id
 
-  const { name, salary, approved } = req.body
+  const { nome, especificacoes } = req.body
 
-  const person = {
-    name,
-    salary,
-    approved,
+  const dispositivos = {
+    nome,
+    especificacoes
   }
 
   try {
-    const updatedPerson = await Person.updateOne({ _id: id }, person)
+    const updatedDispositivos = await Dispositivo.updateOne({ _id: id }, dispositivos)
 
-    if (updatedPerson.matchedCount === 0) {
-      res.status(422).json({ message: 'Usuário não encontrado!' })
+    if (updatedDispositivos.matchedCount === 0) {
+      res.status(422).json({ message: 'Dispositivo não encontrado!' })
       return
     }
 
-    res.status(200).json(person)
+    res.status(200).json(dispositivos)
   } catch (error) {
     res.status(500).json({ erro: error })
   }
 })
 
-app.delete('/person/:id', async (req, res) => {
+app.delete('/dispositivos/:id', async (req, res) => {
   const id = req.params.id
 
-  const person = await Person.findOne({ _id: id })
+  const dispositivos = await Dispositivo.findOne({ _id: id })
 
-  if (!person) {
-    res.status(422).json({ message: 'Usuário não encontrado!' })
+  if (!dispositivos) {
+    res.status(422).json({ message: 'Dispositivo não encontrado!' })
     return
   }
 
   try {
-    await Person.deleteOne({ _id: id })
+    await Dispositivo.deleteOne({ _id: id })
 
-    res.status(200).json({ message: 'Usuário removido com sucesso!' })
+    res.status(200).json({ message: 'Dispositivo removido com sucesso!' })
   } catch (error) {
     res.status(500).json({ erro: error })
   }
@@ -135,3 +128,59 @@ mongoose
   // q0RPw633TgcpqBhv
 
   // mongodb+srv://matheus:q0RPw633TgcpqBhv@apicluster.vj5rqzi.mongodb.net/?retryWrites=true&w=majority
+
+  const Eventos = require('./models/Eventos')
+  app.use(
+    express.urlencoded({
+      extended: true,
+    }),
+  )
+
+  app.use(express.json())
+  
+
+app.post('/eventos', async (req, res) => {
+  const { tipo, dispos } = req.body
+
+  if(!tipo){
+    res.status(422).json({error: 'O nome é obrigatório'})
+  }
+
+  if(dispos){
+    res.status(422).json({error: 'O Dispositivo é obrigatório'})
+  } 
+  const id = req.params.id
+  try {
+    const dispositivos = await Dispositivo.findOne({ dispos: id })
+
+    if (!dispositivos) {
+      res.status(422).json({ message: 'Dispositivo não encontrado!' })
+      return
+    }
+  } catch (error) {
+    res.status(500).json({ erro: error })
+  }
+  
+  const eventos = {
+    tipo,
+    dispos,
+  }
+
+  try {
+    await Eventos.create(eventos)
+
+    res.status(201).json({ message: 'Dispositivo inserido no sistema com sucesso!' })
+  } catch (error) {
+    res.status(500).json({ erro: error })
+  }
+})
+
+app.get('/eventos', async (req, res) => {
+  try {
+    const eventos = await Eventos.find()
+
+    res.status(200).json(eventos)
+  } catch (error) {
+    res.status(500).json({ erro: error })
+  }
+})
