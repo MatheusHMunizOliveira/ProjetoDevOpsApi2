@@ -9,8 +9,7 @@ pipeline{
             echo 'building the application...'
         }
       }
-      S
-    stage ("test"){
+      stage ("test"){
         steps{
             echo 'testing the application...'
         }
