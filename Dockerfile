@@ -11,4 +11,4 @@ COPY --chown=node:node . .
 
 EXPOSE 8080
 
-CMD [ "node", "ProjetoDevOpsApi2.js" ]
+CMD [ "npm", "start" ]
