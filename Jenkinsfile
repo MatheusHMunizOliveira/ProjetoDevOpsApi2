@@ -4,9 +4,11 @@ pipeline{
   
   stages{
   
-      stage ("build"){
+      stage ("Build docker image"){
         steps{
-            echo 'building the application...'
+          script{
+             sh 'docker build -t matheuscoffee/aplicacao2 . '
+          }
         }
       }
       stage ("test"){
